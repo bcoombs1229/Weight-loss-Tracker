@@ -3,35 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>645 Elite Dashboard</title>
+    <title>645 Elite Pro Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #0f172a; 
-            color: #f8fafc;
-        }
-        .glass-card { 
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-        }
-        .input-field {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            transition: all 0.3s ease;
-        }
-        .input-field:focus {
-            border-color: #ef4444;
-            outline: none;
-            box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
-        }
-        .neon-text-red { text-shadow: 0 0 8px rgba(239, 68, 68, 0.5); }
-        .neon-border-red { border-color: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.2); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; }
+        .input-field { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); color: white; transition: all 0.3s ease; }
+        .input-field:focus { border-color: #ef4444; outline: none; box-shadow: 0 0 10px rgba(239, 68, 68, 0.3); }
         ::-webkit-calendar-picker-indicator { filter: invert(1); }
     </style>
 </head>
@@ -58,19 +38,21 @@
                 </div>
             </div>
             <div class="glass-card p-6">
-                <p class="text-xs text-slate-400 uppercase tracking-widest mb-1">Weight Delta</p>
-                <p class="text-2xl font-bold text-emerald-400" id="weightChange">0.0</p>
-                <p class="text-[10px] text-slate-500 mt-2">TOTAL SINCE START</p>
+                <p class="text-xs text-slate-400 uppercase tracking-widest mb-1">Daily Water</p>
+                <p class="text-2xl font-bold text-cyan-400" id="latestWater">0 oz</p>
+                <div class="w-full bg-slate-800 h-1.5 mt-3 rounded-full overflow-hidden">
+                    <div id="waterProgress" class="bg-cyan-400 h-full" style="width: 0%"></div>
+                </div>
             </div>
             <div class="glass-card p-6">
                 <p class="text-xs text-slate-400 uppercase tracking-widest mb-1">Workouts</p>
                 <p class="text-2xl font-bold text-red-500" id="totalWorkouts">0</p>
-                <p class="text-[10px] text-slate-500 mt-2">645 SESSIONS COMPLETE</p>
+                <p class="text-[10px] text-slate-500 mt-2 uppercase">Sessions Complete</p>
             </div>
             <div class="glass-card p-6">
-                <p class="text-xs text-slate-400 uppercase tracking-widest mb-1">Consistency</p>
-                <p class="text-2xl font-bold text-purple-400" id="streak">0</p>
-                <p class="text-[10px] text-slate-500 mt-2">DAYS LOGGED</p>
+                <p class="text-xs text-slate-400 uppercase tracking-widest mb-1">Weight Delta</p>
+                <p class="text-2xl font-bold text-emerald-400" id="weightChange">0.0</p>
+                <p class="text-[10px] text-slate-500 mt-2 uppercase">Since Start</p>
             </div>
         </div>
 
@@ -84,16 +66,18 @@
                     <form id="logForm" class="space-y-4">
                         <input type="date" id="date" class="input-field w-full p-3 rounded-xl" required>
                         <input type="number" step="0.1" id="weight" class="input-field w-full p-3 rounded-xl" placeholder="Weight (lbs)">
-                        <input type="number" id="calories" class="input-field w-full p-3 rounded-xl" placeholder="Calories (Target: 1900)">
-                        <input type="number" id="protein" class="input-field w-full p-3 rounded-xl" placeholder="Protein (Target: 170g)">
+                        <input type="number" id="water" class="input-field w-full p-3 rounded-xl" placeholder="Water Intake (oz)">
                         <input type="number" id="steps" class="input-field w-full p-3 rounded-xl" placeholder="Steps (Target: 10k)">
                         <input type="number" id="burn" class="input-field w-full p-3 rounded-xl" placeholder="Active Burn (Target: 650)">
+                        <input type="number" id="calories" class="input-field w-full p-3 rounded-xl" placeholder="Calories (1900-2100)">
+                        <input type="number" id="protein" class="input-field w-full p-3 rounded-xl" placeholder="Protein (170g)">
                         <select id="workout" class="input-field w-full p-3 rounded-xl">
                             <option value="645 Workout">645 Workout</option>
                             <option value="Rest Day">Rest Day</option>
+                            <option value="Supplemental">Supplemental</option>
                         </select>
-                        <button type="submit" class="w-full py-4 bg-red-600 hover:bg-red-500 text-white font-extrabold rounded-xl transition-all transform hover:scale-[1.02] active:scale-95 shadow-lg shadow-red-900/20">
-                            UPDATE STATUS
+                        <button type="submit" class="w-full py-4 bg-red-600 hover:bg-red-500 text-white font-extrabold rounded-xl transition-all shadow-lg shadow-red-900/20">
+                            SAVE RECORD
                         </button>
                     </form>
                 </div>
@@ -101,25 +85,25 @@
 
             <div class="lg:col-span-2 space-y-8">
                 <div class="glass-card p-6">
-                    <h3 class="font-bold text-slate-300 mb-6">Performance Trends</h3>
+                    <h3 class="font-bold text-slate-300 mb-6 italic text-sm tracking-widest">PERFORMANCE TRENDS</h3>
                     <canvas id="mainChart" height="200"></canvas>
                 </div>
                 
                 <div class="glass-card p-6">
-                    <h3 class="font-bold text-slate-300 mb-6 italic">History Log</h3>
+                    <h3 class="font-bold text-slate-300 mb-6 italic text-sm tracking-widest uppercase">History Log</h3>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
                             <thead class="text-[10px] text-slate-500 uppercase tracking-widest border-b border-slate-700">
                                 <tr>
                                     <th class="pb-3">Date</th>
                                     <th class="pb-3 text-center">Weight</th>
-                                    <th class="pb-3 text-center">Steps</th>
+                                    <th class="pb-3 text-center">Steps/Water</th>
                                     <th class="pb-3 text-center">Burn</th>
-                                    <th class="pb-3"></th>
+                                    <th class="pb-3 text-right">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="historyBody" class="text-sm divide-y divide-slate-800">
-                                </tbody>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -127,7 +111,7 @@
         </div>
 
         <div class="mt-12 text-center pb-10">
-            <button onclick="exportData()" class="text-slate-500 text-xs hover:text-red-400 transition-colors tracking-widest uppercase">
+            <button onclick="exportData()" class="text-slate-500 text-[10px] hover:text-red-400 transition-colors tracking-widest uppercase font-bold">
                 Copy Data for Gemini Analysis
             </button>
         </div>
@@ -136,6 +120,7 @@
     <script>
         let entries = JSON.parse(localStorage.getItem('645tracker_v2')) || [];
         const startWeight = 205;
+        const waterGoal = 100;
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('date').valueAsDate = new Date();
@@ -148,6 +133,7 @@
                 id: Date.now(),
                 date: document.getElementById('date').value,
                 weight: parseFloat(document.getElementById('weight').value) || 0,
+                water: parseInt(document.getElementById('water').value) || 0,
                 calories: parseInt(document.getElementById('calories').value) || 0,
                 protein: parseInt(document.getElementById('protein').value) || 0,
                 steps: parseInt(document.getElementById('steps').value) || 0,
@@ -157,6 +143,7 @@
 
             const idx = entries.findIndex(e => e.date === entry.date);
             if (idx > -1) entries[idx] = entry; else entries.push(entry);
+            
             entries.sort((a, b) => new Date(a.date) - new Date(b.date));
             localStorage.setItem('645tracker_v2', JSON.stringify(entries));
             renderUI();
@@ -166,7 +153,10 @@
 
         let chartInst = null;
         function renderUI() {
-            if (entries.length === 0) return;
+            if (entries.length === 0) {
+                document.getElementById('historyBody').innerHTML = '<tr><td colspan="5" class="py-10 text-center text-slate-500">No data logged yet.</td></tr>';
+                return;
+            }
             const latest = entries[entries.length - 1];
             
             // Update KPIs
@@ -176,11 +166,16 @@
             document.getElementById('totalWorkouts').innerText = entries.filter(e => e.workout.includes('645')).length;
             document.getElementById('streak').innerText = entries.length;
             
+            // Steps Progress
             const recentSteps = entries.slice(-7).reduce((acc, c) => acc + c.steps, 0) / (entries.slice(-7).length || 1);
             document.getElementById('avgSteps').innerText = Math.round(recentSteps).toLocaleString();
             document.getElementById('stepProgress').style.width = Math.min((recentSteps / 10000) * 100, 100) + '%';
 
-            // Table
+            // Water Progress
+            document.getElementById('latestWater').innerText = (latest.water || 0) + ' oz';
+            document.getElementById('waterProgress').style.width = Math.min(((latest.water || 0) / waterGoal) * 100, 100) + '%';
+
+            // Table with Fixed Delete Logic
             const tbody = document.getElementById('historyBody');
             tbody.innerHTML = '';
             [...entries].reverse().forEach(e => {
@@ -188,10 +183,16 @@
                 row.className = "hover:bg-white/5 transition-colors";
                 row.innerHTML = `
                     <td class="py-4 font-medium text-slate-300">${e.date.split('-').slice(1).join('/')}</td>
-                    <td class="py-4 text-center font-bold text-white">${e.weight}</td>
-                    <td class="py-4 text-center ${e.steps >= 10000 ? 'text-emerald-400' : 'text-slate-400'}">${e.steps.toLocaleString()}</td>
+                    <td class="py-4 text-center font-bold text-white">${e.weight || '--'}</td>
+                    <td class="py-4 text-center">
+                        <span class="${e.steps >= 10000 ? 'text-blue-400' : 'text-slate-500'}">${e.steps.toLocaleString()}</span>
+                        <span class="text-slate-600 mx-1">/</span>
+                        <span class="${e.water >= 100 ? 'text-cyan-400' : 'text-slate-500'}">${e.water}oz</span>
+                    </td>
                     <td class="py-4 text-center ${e.burn >= 650 ? 'text-red-400' : 'text-slate-400'}">${e.burn}</td>
-                    <td class="py-4 text-right"><button onclick="deleteEntry(${e.id})" class="text-slate-600 hover:text-red-500">×</button></td>
+                    <td class="py-4 text-right">
+                        <button onclick="deleteEntry(${e.id})" class="bg-red-500/10 hover:bg-red-500/30 text-red-500 w-8 h-8 rounded-lg transition-all">✕</button>
+                    </td>
                 `;
                 tbody.appendChild(row);
             });
@@ -212,10 +213,10 @@
                         tension: 0.4,
                         yAxisID: 'y'
                     }, {
-                        label: 'Steps',
+                        label: 'Water (oz)',
                         type: 'bar',
-                        data: entries.map(e => e.steps),
-                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        data: entries.map(e => e.water),
+                        backgroundColor: 'rgba(34, 211, 238, 0.2)',
                         yAxisID: 'y1'
                     }]
                 },
@@ -225,16 +226,19 @@
                     scales: {
                         x: { grid: { display: false }, ticks: { color: '#64748b' } },
                         y: { position: 'left', grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } },
-                        y1: { position: 'right', grid: { display: false }, ticks: { display: false } }
+                        y1: { position: 'right', grid: { display: false }, ticks: { display: false }, suggestedMax: 150 }
                     }
                 }
             });
         }
 
-        function deleteEntry(id) {
-            entries = entries.filter(e => e.id !== id);
-            localStorage.setItem('645tracker_v2', JSON.stringify(entries));
-            renderUI();
+        // Fixed Delete Function
+        window.deleteEntry = function(id) {
+            if (confirm('Delete this record?')) {
+                entries = entries.filter(e => e.id !== id);
+                localStorage.setItem('645tracker_v2', JSON.stringify(entries));
+                renderUI();
+            }
         }
 
         function exportData() {
